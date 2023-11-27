@@ -2,9 +2,13 @@
 
 
 
-## Getting Started
+## Getting Started with Azure Container Storage
 
-This repo contains the code and instructions to deploy Azure Container Storage using CLI and deploy workloads.
+This repo contains the code and instructions to deploy Azure Container Storage using CLI and deploy Jupyter & Kafka workloads.
+
+### Pre-requisites
+* Install [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli#install-or-update)
+* Install [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/#install-kubectl-binary-with-curl-on-windows)
 
 ### Installation
 
@@ -15,28 +19,36 @@ az extension add --upgrade --name aks-preview
 # Add or upgrade to the latest version of k8s-extension by running the following command.
 az extension add --upgrade --name k8s-extension
 
-# set subscription context
+# Set subscription context
 az account set --subscription <subscription-id>
 
-# register resoure providers
+# Register resoure providers
 az provider register --namespace Microsoft.ContainerService --wait 
 az provider register --namespace Microsoft.KubernetesConfiguration --wait
 
-# create a resource group
+# Create a resource group
 az group create --name <resource-group-name> --location <location>
+
+# Create an AKS cluster with Azure Container Storage extension enabled
 az aks create -n <cluster-name> -g <resource-group-name> --node-vm-size Standard_D4s_v3 --node-count 3 --enable-azure-container-storage <storage-pool-type>
 
-#display available storage pools
+# Display available storage pools, one was created when Azure Container Storage was enabled
 kubectl get sp –n acstor
 
-#display storage classes
+# Display storage classes - there should be a storage class created that corresponds to the storage pool
 kubectl get sc
 ```
 
-
-
 ## Demo Jupytehub
-create config.yaml with content
+
+### Pre-requisites
+* Install [Python](https://www.python.org/downloads/windows/)
+* Install [requests](https://pypi.org/project/requests/) Python library
+* Install [Chocolatey](https://chocolatey.org/install) to install helm
+
+### Deployment
+
+1. Create config.yaml file to specify that each single user that will be created will get provisioned 1 Gi of storage, from a StorageClass created via Azure Container Storage.
 
 ```bash
 code config.yaml
@@ -49,11 +61,13 @@ singleuser:
       storageClass: acstor-azuredisk
 hub:
   config:
+    JupyterHub:
+      admin_access: false
     Authenticator:
-      admin_users:        
-        - adminuser
+      admin_users:
+        - admin
 ```
-install jupyterhub
+2. Install jupyterhub
 
 ```bash
 choco install kubernetes-helm
@@ -63,42 +77,37 @@ choco install kubernetes-helm
 helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
 helm repo update
 ```
+This is installing JupyterHub using the information provided on config.yaml, and creating a namespace (jhub1) where the demo resources will sit.
 ```bash
 helm upgrade --cleanup-on-fail --install jhub1 jupyterhub/jupyterhub --namespace jhub1 --create-namespace --values config.yaml
 ```
 ```bash
-  kubectl get service --namespace jhub1
+kubectl get service --namespace jhub1
 ```
 
-Port forward to connect to the service
+3. Port forward to connect to the service
 ```bash
 kubectl --namespace=jhub1 port-forward service/proxy-public 8080:http
 ```
-Note: If the port-forward doesnt work from the portal CLI, you can try using local terminal
+Note: If the port-forward doesn't work from CloudShell, you can try using your computer's local terminal
 
-From the browser:
-Log on to:
+#### Create additional user sessions
+1. From the browser - log on to: http://localhost:8080/ using the credentials from the config.yaml file (username: admin).
 
-http://localhost:8080/
+2. Generate the token from http://localhost:8080/hub/token. Tokens are sent to the Hub for verification. The Hub replies with a JSON model describing the authenticated user.
 
-Generate the token: Tokens are sent to the Hub for verification. The Hub replies with a JSON model describing the authenticated user.
+3. Update the value of the token in the 'api_token' parameter in the Python script (user_creation.py)
 
-http://localhost:8080/hub/token
-
-Update the value of the token in the 'api_token' parameter in the python script (user_creation.py)
-
-Run python script
+4. Run python script
+```bash
 py user_creation.py
+```
 
-
-Run these commands in your cluster to get the pods and pvcs'
+5. Run these commands in your cluster to get the pods and PVCs
 ```bash
 kubectl get pvc -n jhub1
 kubectl get pods -n jhub1
 ```
-## Resources
-Provide additional resource like installing choco
-
 
 ## Demo Kafka
 Kafka Message producer is a small Go lang application to generate X number of messages and ingest to Kafka. It's using confluent-kafka-go library. The kafka-x-messages-producer.yaml file requires some environment variables and the kafka user1 password as a secret. Environment variables are: NUM_MESSAGES, KAFKA_TOPIC, KAFKA_ADDR, KAFKA_USER and KAFKA_PASSWORD(as kubernetes secret).
@@ -213,4 +222,3 @@ spec:
     requests: {"storage": 1Ti}
 EOF
 ```
-
