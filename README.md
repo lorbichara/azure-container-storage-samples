@@ -30,7 +30,7 @@ az provider register --namespace Microsoft.KubernetesConfiguration --wait
 az group create --name <resource-group-name> --location <location>
 
 # Create an AKS cluster with Azure Container Storage extension enabled
-az aks create -n <cluster-name> -g <resource-group-name> --node-vm-size Standard_D4s_v3 --node-count 3 --enable-azure-container-storage <storage-pool-type>
+az aks create -n <cluster-name> -g <resource-group-name> --node-vm-size Standard_D4s_v3 --node-count 3 --enable-azure-container-storage azureDisk
 
 # Display available storage pools, one was created when Azure Container Storage was enabled
 kubectl get sp –n acstor
