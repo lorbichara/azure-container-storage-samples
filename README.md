@@ -48,7 +48,7 @@ kubectl get sc
 
 ### Deployment
 
-1. Create config.yaml file to specify that each single user that will be created will get provisioned 1 Gi of storage, from a StorageClass created via Azure Container Storage.
+1. Create config.yaml file to specify that each single user that will be created will get provisioned 1 Gi of storage, from a StorageClass created via Azure Container Storage. 
 
 ```bash
 code config.yaml
