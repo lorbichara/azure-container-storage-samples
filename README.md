@@ -69,9 +69,9 @@ hub:
 ```
 2. Install jupyterhub
 
-(If not running on Cloud Shell)
+
 ```bash
-choco install kubernetes-helm
+(if not running on Cloud Shell) choco install kubernetes-helm
 ```
 
 ```bash
