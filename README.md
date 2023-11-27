@@ -6,7 +6,7 @@
 
 This repo contains the code and instructions to deploy Azure Container Storage using CLI and deploy Jupyter & Kafka workloads.
 
-### Pre-requisites
+### Pre-requisites (if not running on Cloud Shell)
 * Install [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli#install-or-update)
 * Install [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/#install-kubectl-binary-with-curl-on-windows)
 
@@ -42,9 +42,9 @@ kubectl get sc
 ## Demo Jupytehub
 
 ### Pre-requisites
-* Install [Python](https://www.python.org/downloads/windows/)
-* Install [requests](https://pypi.org/project/requests/) Python library
-* Install [Chocolatey](https://chocolatey.org/install) to install helm
+* Install [Python](https://www.python.org/downloads/windows/) (if not running on Cloud Shell)
+* Install [requests](https://pypi.org/project/requests/) Python library (if not running on Cloud Shell)
+* Install [Chocolatey](https://chocolatey.org/install) to install helm (if not running on Cloud Shell)
 
 ### Deployment
 
