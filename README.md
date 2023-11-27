@@ -32,10 +32,10 @@ az group create --name <resource-group-name> --location <location>
 # create an AKS cluster with Azure Container Storage extension enabled
 az aks create -n <cluster-name> -g <resource-group-name> --node-vm-size Standard_D4s_v3 --node-count 3 --enable-azure-container-storage <storage-pool-type>
 
-#display available storage pools
+# display available storage pools, one was created when Azure Container Storage was enabled
 kubectl get sp –n acstor
 
-#display storage classes
+# display storage classes - there should be a storage class created that corresponds to the storage pool
 kubectl get sc
 ```
 
@@ -48,7 +48,7 @@ kubectl get sc
 
 ### Deployment
 
-Create config.yaml file to specify that each single user that will be created will get provisioned 1 Gi of storage, from a StorageClass created via Azure Container Storage.
+1. Create config.yaml file to specify that each single user that will be created will get provisioned 1 Gi of storage, from a StorageClass created via Azure Container Storage.
 
 ```bash
 code config.yaml
@@ -67,7 +67,7 @@ hub:
       admin_users:
         - admin
 ```
-install jupyterhub
+2. Install jupyterhub
 
 ```bash
 choco install kubernetes-helm
@@ -77,35 +77,33 @@ choco install kubernetes-helm
 helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
 helm repo update
 ```
+This is installing JupyterHub using the information provided on config.yaml, and creating a namespace (jhub1) where the demo resources will sit.
 ```bash
 helm upgrade --cleanup-on-fail --install jhub1 jupyterhub/jupyterhub --namespace jhub1 --create-namespace --values config.yaml
 ```
 ```bash
-  kubectl get service --namespace jhub1
+kubectl get service --namespace jhub1
 ```
 
-Port forward to connect to the service
+3. Port forward to connect to the service
 ```bash
 kubectl --namespace=jhub1 port-forward service/proxy-public 8080:http
 ```
-Note: If the port-forward doesnt work from the portal CLI, you can try using local terminal
+Note: If the port-forward doesn't work from CloudShell, you can try using your computer's local terminal
 
-From the browser:
-Log on to:
+#### Create additional user sessions
+1. From the browser - log on to: http://localhost:8080/ using the credentials from the config.yaml file (username: admin).
 
-http://localhost:8080/
+2. Generate the token from http://localhost:8080/hub/token. Tokens are sent to the Hub for verification. The Hub replies with a JSON model describing the authenticated user.
 
-Generate the token: Tokens are sent to the Hub for verification. The Hub replies with a JSON model describing the authenticated user.
+3. Update the value of the token in the 'api_token' parameter in the Python script (user_creation.py)
 
-http://localhost:8080/hub/token
-
-Update the value of the token in the 'api_token' parameter in the python script (user_creation.py)
-
-Run python script
+4. Run python script
+```bash
 py user_creation.py
+```
 
-
-Run these commands in your cluster to get the pods and pvcs'
+5. Run these commands in your cluster to get the pods and PVCs
 ```bash
 kubectl get pvc -n jhub1
 kubectl get pods -n jhub1
