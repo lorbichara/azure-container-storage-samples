@@ -4,7 +4,7 @@
 
 ## Getting Started with Azure Container Storage
 
-This repo contains the code and instructions to deploy Azure Container Storage using CLI and deploy Jupyter & Kafka workloads.
+This repo contains the code and instructions to deploy Azure Container Storage using CLI and deploy Jupyter & Kafka workloads. 
 
 ### Pre-requisites
 * Install [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli#install-or-update)
