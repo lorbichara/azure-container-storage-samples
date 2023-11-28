@@ -5,7 +5,7 @@ from time import sleep
 base_url = "http://localhost:8080/hub/api"
 
 # Set your API token
-api_token = "5ce0e9ddb71c4a769778281a97af4645"
+api_token = ""
 
 # Define an array of usernames
 usernames = []
