@@ -208,7 +208,7 @@ az aks update --resource-group $RG --name $AKS_CLUSTER_NAME --enable-azure-conta
 ```
 13. Add nodepool label
 ```bash
-az aks nodepool update --cluster-name Ig23elsearch --name systempool --resource-group $RG --labels acstor.azure.com/io-engine=acstor  
+az aks nodepool update --cluster-name $AKS_CLUSTER_NAME --name systempool --resource-group $RG --labels acstor.azure.com/io-engine=acstor
 ```
 
 ### Install Elastic Search
